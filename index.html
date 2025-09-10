@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Watch-Based Emergency Alert Dashboard</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+    }
+
+    header {
+      background-color: #007bff;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .container {
+      padding: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
+
+    .card {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      width: 300px;
+      text-align: center;
+    }
+
+    .card h3 {
+      margin-top: 0;
+    }
+
+    .status {
+      font-weight: bold;
+      margin: 10px 0;
+    }
+
+    .status.normal {
+      color: green;
+    }
+
+    .status.alerting {
+      color: red;
+    }
+
+    .status.idle {
+      color: gray;
+    }
+
+    button {
+      margin: 5px;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      color: white;
+    }
+
+    .btn-alert {
+      background-color: #dc3545;
+    }
+
+    .btn-auto {
+      background-color: #fd7e14;
+    }
+
+    .btn-notify {
+      background-color: #28a745;
+    }
+
+    .btn-trespass {
+      background-color: #6f42c1;
+    }
+
+    .notifications {
+      margin: 20px;
+      padding: 20px;
+      background-color: #fff3cd;
+      border-left: 6px solid #ffeeba;
+      border-radius: 8px;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .notifications h4 {
+      margin-top: 0;
+    }
+
+    ul#notificationList {
+      padding-left: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .card {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Tourist Emergency Watch Dashboard</h1>
+    <p>Real-time alert and safety system for tourists in disaster zones</p>
+  </header>
+
+  <div class="notifications">
+    <h4>🛎️ Notifications</h4>
+    <ul id="notificationList"></ul>
+  </div>
+
+  <div class="container" id="watchContainer">
+    <!-- Cards for each tourist will be inserted here -->
+  </div>
+
+  <script>
+    // Sample tourist watch data
+    const tourists = [
+      { id: 1, name: "Alice (Tourist A)", status: "normal" },
+      { id: 2, name: "Bob (Tourist B)", status: "normal" },
+      { id: 3, name: "Carlos (Tourist C)", status: "normal" }
+    ];
+
+    const container = document.getElementById("watchContainer");
+    const notificationList = document.getElementById("notificationList");
+
+    function renderDashboard() {
+      container.innerHTML = "";
+      tourists.forEach((tourist, index) => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <h3>${tourist.name}</h3>
+          <p class="status ${tourist.status}">Status: ${tourist.status.toUpperCase()}</p>
+          <button class="btn-alert" onclick="sendManualAlert(${index})">Send Manual Alert</button>
+          <button class="btn-auto" onclick="autoEmergency(${index})">Auto Alert (No Response)</button>
+          <button class="btn-notify" onclick="notifyNearby(${index})">Notify Nearby People</button>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function sendManualAlert(index) {
+      tourists[index].status = "alerting";
+      notify(`${tourists[index].name} manually triggered an emergency alert.`);
+      renderDashboard();
+    }
+
+    function autoEmergency(index) {
+      tourists[index].status = "alerting";
+      notify(`⚠️ Auto-alert: ${tourists[index].name} is unresponsive. Emergency services have been notified.`);
+      renderDashboard();
+    }
+
+    function notifyNearby(index) {
+      notify(`📣 Nearby people have been alerted to assist ${tourists[index].name}.`);
+    }
+
+    function detectTrespasser() {
+      const unknownId = "Unknown-" + Math.floor(Math.random() * 1000);
+      notify(`🚷 Trespasser detected near restricted area: ID ${unknownId}`);
+    }
+
+    function notify(msg) {
+      const li = document.createElement("li");
+      li.textContent = `${new Date().toLocaleTimeString()} - ${msg}`;
+      notificationList.prepend(li);
+    }
+
+    // Simulate trespasser detection every 30 seconds
+    setInterval(detectTrespasser, 30000);
+
+    renderDashboard();
+  </script>
+
+</body>
+</html>
+
