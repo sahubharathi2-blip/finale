@@ -3,186 +3,240 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Watch-Based Emergency Alert Dashboard</title>
+  <title>Disaster Alert Dashboard</title>
   <style>
-    body {
+    :root {
+      --primary: #007bff;
+      --danger: #dc3545;
+      --warning: #ffc107;
+      --success: #28a745;
+      --light: #f8f9fa;
+      --dark: #343a40;
+    }
+
+    * {
+      box-sizing: border-box;
       margin: 0;
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
+      padding: 0;
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    body {
+      display: flex;
+      height: 100vh;
+      background-color: var(--light);
+      color: var(--dark);
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 220px;
+      background-color: var(--primary);
+      color: white;
+      padding: 20px;
+    }
+
+    .sidebar h2 {
+      font-size: 1.4em;
+      margin-bottom: 20px;
+    }
+
+    .sidebar p {
+      font-size: 0.9em;
+      opacity: 0.8;
+    }
+
+    /* Main content */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      overflow-y: auto;
     }
 
     header {
-      background-color: #007bff;
-      color: white;
-      padding: 20px;
-      text-align: center;
+      margin-bottom: 20px;
     }
 
-    .container {
-      padding: 20px;
+    header h1 {
+      font-size: 1.6em;
+    }
+
+    .dashboard {
       display: flex;
       flex-wrap: wrap;
       gap: 20px;
-      justify-content: center;
     }
 
     .card {
-      background: white;
+      background-color: white;
       border-radius: 10px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
       padding: 20px;
       width: 300px;
-      text-align: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
 
     .card h3 {
-      margin-top: 0;
+      margin-bottom: 10px;
     }
 
     .status {
+      margin-bottom: 10px;
       font-weight: bold;
-      margin: 10px 0;
     }
 
     .status.normal {
-      color: green;
+      color: var(--success);
     }
 
     .status.alerting {
-      color: red;
+      color: var(--danger);
     }
 
     .status.idle {
       color: gray;
     }
 
-    button {
-      margin: 5px;
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .buttons button {
+      flex: 1 1 auto;
       padding: 10px;
       border: none;
       border-radius: 5px;
-      cursor: pointer;
       color: white;
+      cursor: pointer;
+      font-size: 0.9em;
     }
 
-    .btn-alert {
-      background-color: #dc3545;
-    }
+    .btn-alert { background-color: var(--danger); }
+    .btn-auto { background-color: var(--warning); color: black; }
+    .btn-notify { background-color: var(--success); }
+    .btn-trespass { background-color: #6f42c1; }
 
-    .btn-auto {
-      background-color: #fd7e14;
-    }
-
-    .btn-notify {
-      background-color: #28a745;
-    }
-
-    .btn-trespass {
-      background-color: #6f42c1;
-    }
-
+    /* Notifications */
     .notifications {
-      margin: 20px;
-      padding: 20px;
+      margin-top: 30px;
+    }
+
+    .notifications h2 {
+      margin-bottom: 10px;
+      font-size: 1.2em;
+    }
+
+    .notification-list {
+      list-style: none;
+      max-height: 200px;
+      overflow-y: auto;
+      padding-left: 0;
+    }
+
+    .notification-list li {
       background-color: #fff3cd;
-      border-left: 6px solid #ffeeba;
-      border-radius: 8px;
-      max-width: 800px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    .notifications h4 {
-      margin-top: 0;
-    }
-
-    ul#notificationList {
-      padding-left: 20px;
+      padding: 10px;
+      border-left: 5px solid #ffc107;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      font-size: 0.9em;
     }
 
     @media (max-width: 768px) {
-      .card {
-        width: 100%;
+      .sidebar {
+        display: none;
       }
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <h1>Tourist Emergency Watch Dashboard</h1>
-    <p>Real-time alert and safety system for tourists in disaster zones</p>
-  </header>
-
-  <div class="notifications">
-    <h4>🛎️ Notifications</h4>
-    <ul id="notificationList"></ul>
+  <div class="sidebar">
+    <h2>Disaster Alert</h2>
+    <p>Monitoring smart watches for tourist safety during natural disasters.</p>
   </div>
 
-  <div class="container" id="watchContainer">
-    <!-- Cards for each tourist will be inserted here -->
+  <div class="main">
+    <header>
+      <h1>Real-Time Emergency Dashboard</h1>
+    </header>
+
+    <section class="dashboard" id="dashboard">
+      <!-- Tourist cards will be injected here -->
+    </section>
+
+    <section class="notifications">
+      <h2>Notifications</h2>
+      <ul class="notification-list" id="notificationList"></ul>
+    </section>
   </div>
 
   <script>
-    // Sample tourist watch data
     const tourists = [
-      { id: 1, name: "Alice (Tourist A)", status: "normal" },
-      { id: 2, name: "Bob (Tourist B)", status: "normal" },
-      { id: 3, name: "Carlos (Tourist C)", status: "normal" }
+      { id: 1, name: "Alice Johnson", status: "normal" },
+      { id: 2, name: "David Chen", status: "normal" },
+      { id: 3, name: "Maria Lopez", status: "normal" }
     ];
 
-    const container = document.getElementById("watchContainer");
+    const dashboard = document.getElementById("dashboard");
     const notificationList = document.getElementById("notificationList");
 
     function renderDashboard() {
-      container.innerHTML = "";
-      tourists.forEach((tourist, index) => {
+      dashboard.innerHTML = "";
+      tourists.forEach((t, index) => {
         const card = document.createElement("div");
         card.className = "card";
         card.innerHTML = `
-          <h3>${tourist.name}</h3>
-          <p class="status ${tourist.status}">Status: ${tourist.status.toUpperCase()}</p>
-          <button class="btn-alert" onclick="sendManualAlert(${index})">Send Manual Alert</button>
-          <button class="btn-auto" onclick="autoEmergency(${index})">Auto Alert (No Response)</button>
-          <button class="btn-notify" onclick="notifyNearby(${index})">Notify Nearby People</button>
+          <h3>${t.name}</h3>
+          <p class="status ${t.status}">Status: ${t.status.toUpperCase()}</p>
+          <div class="buttons">
+            <button class="btn-alert" onclick="manualAlert(${index})">Send Alert</button>
+            <button class="btn-auto" onclick="autoAlert(${index})">Auto Alert</button>
+            <button class="btn-notify" onclick="notifyPeople(${index})">Notify Nearby</button>
+          </div>
         `;
-        container.appendChild(card);
+        dashboard.appendChild(card);
       });
     }
 
-    function sendManualAlert(index) {
+    function manualAlert(index) {
       tourists[index].status = "alerting";
-      notify(`${tourists[index].name} manually triggered an emergency alert.`);
       renderDashboard();
+      addNotification(`${tourists[index].name} has manually triggered an alert.`);
     }
 
-    function autoEmergency(index) {
+    function autoAlert(index) {
       tourists[index].status = "alerting";
-      notify(`⚠️ Auto-alert: ${tourists[index].name} is unresponsive. Emergency services have been notified.`);
       renderDashboard();
+      addNotification(`🚨 Auto-alert: ${tourists[index].name} is unresponsive. Help requested automatically.`);
     }
 
-    function notifyNearby(index) {
-      notify(`📣 Nearby people have been alerted to assist ${tourists[index].name}.`);
+    function notifyPeople(index) {
+      addNotification(`📢 Nearby people alerted to assist ${tourists[index].name}.`);
     }
 
-    function detectTrespasser() {
-      const unknownId = "Unknown-" + Math.floor(Math.random() * 1000);
-      notify(`🚷 Trespasser detected near restricted area: ID ${unknownId}`);
-    }
-
-    function notify(msg) {
+    function addNotification(message) {
       const li = document.createElement("li");
-      li.textContent = `${new Date().toLocaleTimeString()} - ${msg}`;
+      li.textContent = `${new Date().toLocaleTimeString()} - ${message}`;
       notificationList.prepend(li);
     }
 
-    // Simulate trespasser detection every 30 seconds
-    setInterval(detectTrespasser, 30000);
+    function detectTrespasser() {
+      const id = Math.floor(Math.random() * 1000);
+      addNotification(`🚷 Unknown person detected in restricted area (ID: ${id}). Authorities notified.`);
+    }
+
+    // Simulate trespass detection every 45 seconds
+    setInterval(detectTrespasser, 45000);
 
     renderDashboard();
   </script>
-
 </body>
 </html>
-
